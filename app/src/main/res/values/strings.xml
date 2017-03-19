@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">客服助手</string>
+    <string name="action_settings">客服助手设置</string>
+    <string name="desc">开启后实现自动发送回复消息</string>
+    <string name="open_accessibility">打开或关闭客服助手</string>
+    <string name="find_envelope">找到客服助手</string>
+    <string name="envelope_service_interrupt">客服助手服务被中断啦~</string>
+    <string name="envelope_service_start">开启客服助手服务</string>
+    <string name="envelope_service_end">关闭客服助手服务</string>
+
+    <string name="is_service_run">服务是否运行:</string>
+    <string name="service_not_run">未运行</string>
+    <string name="service_is_run">正在运行</string>
+    <string name="message_type">消息类型:</string>
+    <string name="sender">发送人:</string>
+    <string name="last_message">最新消息:</string>
+
+    <string name="message_type_qq">QQ</string>
+    <string name="message_type_wechat">微信</string>
+    <string name="error_msg">么么哒</string>
+
+
+</resources>
