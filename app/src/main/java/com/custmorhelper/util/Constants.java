@@ -14,9 +14,6 @@ public class Constants {
 
     public static final String SEPARATED = ":";
 
-    public static final int MSG_QQ = 1;
-    public static final int MSG_WECHAT = 2;
-
     public static final int MSG_SERVICE_OFF = 0;
     public static final int MSG_SERVICE_ON = 1;
 

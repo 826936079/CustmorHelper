@@ -1,18 +1,20 @@
 package com.custmorhelper.bean;
 
 /**
- * Created by xiaofeng on 2017/3/18.
+ * Created by Administrator on 2017/3/30.
  */
+public class RobotUrlResult {
 
-public class ResultBean {
 
     /**
-     * code : 100000
-     * text : 你好，我叫小杰，是你的私人助手！
+     * code : 200000
+     * text : 亲，已帮你找到图片
+     * url : http://m.image.so.com/i?q=%E7%BE%8E%E5%A5%B3
      */
 
     private int code;
     private String text;
+    private String url;
 
     public int getCode() {
         return code;
@@ -28,5 +30,13 @@ public class ResultBean {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

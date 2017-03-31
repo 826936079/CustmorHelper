@@ -18,12 +18,17 @@ import okhttp3.OkHttpClient;
  */
 public class GlobleManager {
 
+
     private static Context mContext;
     private static GlobleManager globleManager;
     private static OkHttpClient okHttpClient;
     private static Map<String, List<Cookie>> listMap;
 
-    private GlobleManager () {
+    private GlobleManager() {
+        initOkHttpClient();
+    }
+
+    private static void initOkHttpClient() {
         listMap = new HashMap<String, List<Cookie>>();
         okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -57,7 +62,10 @@ public class GlobleManager {
         return mContext;
     }
 
-    public OkHttpClient getOkHttpClient() {
+    public static OkHttpClient getOkHttpClient() {
+        if (okHttpClient == null) {
+            initOkHttpClient();
+        }
         return okHttpClient;
     }
 }

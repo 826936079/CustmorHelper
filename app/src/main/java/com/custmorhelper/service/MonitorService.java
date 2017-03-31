@@ -7,7 +7,6 @@ import android.app.KeyguardManager;
 import android.app.KeyguardManager.KeyguardLock;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.PendingIntent.CanceledException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -23,7 +22,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.custmorhelper.R;
 import com.custmorhelper.bean.MessageBean;
-import com.custmorhelper.bean.ResultBean;
 import com.custmorhelper.model.RobotUtil;
 import com.custmorhelper.util.Constants;
 import com.custmorhelper.util.MyLog;
@@ -58,7 +56,7 @@ public class MonitorService extends AccessibilityService {
     private PowerManager.WakeLock wl = null;
 
     //收到的信息
-    private String receiveText = "";
+    private String sendMessage = "";
 
 
     Handler handler = new Handler() {
@@ -69,12 +67,12 @@ public class MonitorService extends AccessibilityService {
 
                 case Constants.HANDLE_GET_ROBOT_MSG:
                     try {
-                        ResultBean resultBean = (ResultBean) msg.obj;
-                        receiveText = resultBean.getText();
-                        MyLog.e(TAG, "HANDLE_GET_ROBOT_MSG->receiveText:" + receiveText);
+                        MessageBean messageBean = (MessageBean) msg.obj;
+                        sendMessage = messageBean.getSendContent();
+
                     } catch (Exception e) {
                         e.printStackTrace();
-                        receiveText = getString(R.string.error_msg);
+                        sendMessage = getString(R.string.error_msg);
                     }
 
                     break;
@@ -84,7 +82,7 @@ public class MonitorService extends AccessibilityService {
                     AccessibilityNodeInfo nodeInfoInput = (AccessibilityNodeInfo) msg.obj;
                     MyLog.e(TAG, "receive edit node : " + nodeInfoInput.toString());
 
-                    performInput(nodeInfoInput, receiveText);
+                    performInput(nodeInfoInput, sendMessage);
 
                     try {
                         Thread.sleep(500);
@@ -273,41 +271,48 @@ public class MonitorService extends AccessibilityService {
                         int index = content.indexOf(Constants.SEPARATED, 1);
                         MyLog.e(TAG, "separated.index:" + index);
 
-                        //发送广播
-                        MessageBean messageBean = new MessageBean();
-                        Intent intent = new Intent();
-                        if (packageName.equals(Constants.PKG_QQ)) {
-                            messageBean.setType(Constants.MSG_QQ);
-                            messageBean.setSender(content.substring(0, index));
-                            messageBean.setContent(content.substring(index + 1, content.length()));
-                        } else if (packageName.equals(Constants.PKG_WECHAT)) {
-                            messageBean.setType(Constants.MSG_WECHAT);
-                            messageBean.setSender(content.substring(0, index));
-                            messageBean.setContent(content.substring(index + 1, content.length()));
-                            receiveText = content.substring(index + 1, content.length());
-                        }
 
-                        new Thread(){
-                            @Override
-                            public void run() {
-
-                                ResultBean resultBean = RobotUtil.getRobotResult(receiveText);
-                                Message message = handler.obtainMessage(Constants.HANDLE_GET_ROBOT_MSG, resultBean);
-                                message.sendToTarget();
-                                MyLog.e(TAG, "run->result:" + resultBean.getText());
-
-                            }
-                        }.start();
-
-
-                        intent.putExtra(Constants.MSG, messageBean);
-                        intent.setAction(Constants.ACTION_MSG);
-                        sendBroadcast(intent);
+                        String receiveName = content.substring(0, index);
+                        final String receiveMessage = content.substring(index + 1, content.length());
 
                         //收到@提醒
-                        if (messageBean.getSender().equals("vergo")
-                                || messageBean.getSender().equals("Joker")
-                                || messageBean.getSender().equals("jack")) {
+                        if (receiveName.equals("vergo")
+                                || receiveName.equals("Joker")
+                                || receiveName.equals("jack")) {
+
+
+                            //创建message bean对象
+                            final MessageBean messageBean = new MessageBean();
+                            if (packageName.equals(Constants.PKG_QQ)) {
+                                messageBean.setMessageType(MessageBean.MSG_QQ);
+
+                            } else if (packageName.equals(Constants.PKG_WECHAT)) {
+                                messageBean.setMessageType(MessageBean.MSG_WECHAT);
+                            }
+                            messageBean.setFromName(receiveName);
+                            messageBean.setReceiveContent(receiveMessage);
+                            messageBean.setReceiveTime(System.currentTimeMillis());
+
+
+                            new Thread(){
+                                @Override
+                                public void run() {
+
+                                    //获取返回数据
+                                    sendMessage = RobotUtil.getChatMessage(receiveMessage);
+                                    messageBean.setSendContent(sendMessage);
+                                    MyLog.e(TAG, "run->result:" + sendMessage);
+
+                                    //发送广播
+                                    Intent intent = new Intent();
+                                    intent.putExtra(Constants.MSG, messageBean);
+                                    intent.setAction(Constants.ACTION_MSG);
+                                    sendBroadcast(intent);
+
+                                }
+                            }.start();
+
+
                             //模拟打开通知栏消息
                             if (event.getParcelableData() != null && event.getParcelableData() instanceof Notification) {
                                 //播放提示音
@@ -317,7 +322,7 @@ public class MonitorService extends AccessibilityService {
                                     Notification notification = (Notification) event.getParcelableData();
                                     PendingIntent pendingIntent = notification.contentIntent;
                                     pendingIntent.send();
-                                } catch (CanceledException e) {
+                                } catch (PendingIntent.CanceledException e) {
                                     e.printStackTrace();
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -325,6 +330,7 @@ public class MonitorService extends AccessibilityService {
                             }
                             break;
                         }
+
                     }
                 }
                 break;

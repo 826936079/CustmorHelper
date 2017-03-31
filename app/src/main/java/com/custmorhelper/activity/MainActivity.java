@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,7 +15,6 @@ import android.widget.Toast;
 
 import com.custmorhelper.R;
 import com.custmorhelper.bean.MessageBean;
-import com.custmorhelper.bean.ResultBean;
 import com.custmorhelper.service.MainService;
 import com.custmorhelper.service.MonitorService;
 import com.custmorhelper.util.Constants;
@@ -34,15 +31,6 @@ public class MainActivity extends Activity {
 
     private MainReceiver mainReceiver;
 
-    private Handler handler = new Handler() {
-
-        @Override
-        public void handleMessage(Message msg) {
-            ResultBean resultBean = (ResultBean) msg.obj;
-            MyLog.e(TAG, "handleMessage->msg:" + resultBean.getText());
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,13 +105,13 @@ public class MainActivity extends Activity {
             if (action.equals(Constants.ACTION_MSG)) {
                 MessageBean messageBean = bundle.getParcelable(Constants.MSG);
 
-                if (messageBean.getType() == Constants.MSG_QQ) {
+                if (messageBean.getMessageType() == MessageBean.MSG_QQ) {
                     messageType.setText(getString(R.string.message_type_qq));
-                } else if (messageBean.getType() == Constants.MSG_WECHAT) {
+                } else if (messageBean.getMessageType() == MessageBean.MSG_WECHAT) {
                     messageType.setText(getString(R.string.message_type_wechat));
                 }
-                sender.setText(messageBean.getSender());
-                lastMessage.setText(messageBean.getContent());
+                sender.setText(messageBean.getFromName());
+                lastMessage.setText(messageBean.getReceiveContent());
 
             } else if (action.equals(Constants.ACTION_MSG_SERVICE)) {
                 int serviceState = bundle.getInt(Constants.MSG_SERVICE);
