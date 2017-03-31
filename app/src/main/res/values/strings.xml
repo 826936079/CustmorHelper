@@ -15,11 +15,19 @@
     <string name="service_is_run">正在运行</string>
     <string name="message_type">消息类型:</string>
     <string name="sender">发送人:</string>
-    <string name="last_message">最新消息:</string>
+    <string name="receive_message">收到消息:</string>
+    <string name="send_message">发送消息:</string>
 
     <string name="message_type_qq">QQ</string>
     <string name="message_type_wechat">微信</string>
     <string name="error_msg">么么哒</string>
 
+    <string name="welcome_msg">你可以跟我聊这些（请@我 + 笑话、新闻、图片、成语接龙、故事、天气、问答、百科、菜谱、计算、飞机、列车），例如：
+1 讲个笑话 2 看新闻  3 刘亦菲的照片 4 开始成语接龙 5 讲个故事   6 今天深圳的天气 7 感冒应该怎么办 8 周杰伦介绍 9 蛋炒饭怎么做 10 1+1 11 明天深圳到上海的飞机 12 明天深圳到上海火车</string>
+    <string name="change">修改</string>
+    <string name="listener_username">监听用户名:</string>
+    <string name="listener_keyword">监听关键字:</string>
+    <string name="listenerser_name_default">Joker</string>
+    <string name="listener_keyword_default">\@SBJ</string>
 
 </resources>

@@ -13,5 +13,7 @@
     <dimen name="main_layout_margin">15dp</dimen>
 
     <dimen name="main_button_padding_left">5dp</dimen>
+    <dimen name="listener_button_margin_left">5dp</dimen>
+    <dimen name="listener_text_margin_left">5dp</dimen>
 
 </resources>

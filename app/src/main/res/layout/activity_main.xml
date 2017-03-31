@@ -9,6 +9,7 @@
     android:orientation="vertical"
     tools:context=".activity.MainActivity">
 
+
     <LinearLayout
         style="@style/main_layout">
 
@@ -18,12 +19,12 @@
             android:text="@string/is_service_run"/>
 
         <TextView
-            android:id="@+id/isServiceRun"
+            android:id="@+id/isServiceRunTextView"
             style="@style/main_text"
             android:text="@string/service_not_run"/>
 
         <Button
-            android:id="@+id/start"
+            android:id="@+id/startButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/button_padding"
@@ -31,6 +32,48 @@
             android:layout_centerInParent="true"
             android:textSize="@dimen/button_small_size"
             android:text="@string/open_accessibility"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/main_layout">
+
+        <TextView
+            style="@style/main_text"
+            android:text="@string/listener_username"/>
+
+        <TextView
+            android:id="@+id/listenerUserNameTextView"
+            android:text="@string/listenerser_name_default"
+            style="@style/main_text"/>
+
+        <Button
+            android:id="@+id/listenerUserNameButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/listener_button_margin_left"
+            android:text="@string/change"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/main_layout">
+
+        <TextView
+            style="@style/main_text"
+            android:text="@string/listener_keyword"/>
+
+        <TextView
+            android:id="@+id/listenerKeywordTextView"
+            android:text="@string/listener_keyword_default"
+            style="@style/main_text"/>
+
+        <Button
+            android:id="@+id/listenerKeywordButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/listener_button_margin_left"
+            android:text="@string/change"/>
 
     </LinearLayout>
 
@@ -43,7 +86,7 @@
             android:text="@string/message_type"/>
 
         <TextView
-            android:id="@+id/messageType"
+            android:id="@+id/messageTypeTextView"
             style="@style/main_text"/>
 
 
@@ -57,7 +100,7 @@
             android:text="@string/sender"/>
 
         <TextView
-            android:id="@+id/sender"
+            android:id="@+id/senderTextView"
             style="@style/main_text"/>
 
 
@@ -69,10 +112,27 @@
 
         <TextView
             style="@style/main_text"
-            android:text="@string/last_message"/>
+            android:text="@string/receive_message"/>
 
         <TextView
-            android:id="@+id/lastMessage"
+            android:id="@+id/receiveMessageTextView"
+            android:autoLink="all"
+            style="@style/main_text"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/main_layout"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/main_text"
+            android:text="@string/send_message"/>
+
+        <TextView
+            android:id="@+id/sendMessageTextView"
+            android:autoLink="all"
             style="@style/main_text"/>
 
 

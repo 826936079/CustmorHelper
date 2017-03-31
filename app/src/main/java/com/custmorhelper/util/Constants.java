@@ -44,7 +44,8 @@ public class Constants {
     public static final int NODEINFO_EDITTEXT = 1;
     public static final int NODEINFO_BUTTON = 2;
 
-
+    public static final String SP_LISTENER_USERNAME = "listener_username";
+    public static final String SP_LISTENER_KEYWORD = "listener_keyword";
 
 
 }

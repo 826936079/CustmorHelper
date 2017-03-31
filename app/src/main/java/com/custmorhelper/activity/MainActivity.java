@@ -23,11 +23,13 @@ import com.custmorhelper.util.MyLog;
 public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private Button startBtn;
-    private TextView isServiceRun;
-    private TextView messageType;
-    private TextView sender;
-    private TextView lastMessage;
+    private Button startButton;
+    private TextView isServiceRunTextView;
+    private TextView messageTypeTextView;
+    private TextView senderTextView;
+    private TextView receiveMessageTextView;
+    private TextView sendMessageTextView;
+    private Button listenerKeywordButton;
 
     private MainReceiver mainReceiver;
 
@@ -48,14 +50,16 @@ public class MainActivity extends Activity {
 
     private void initView() {
 
-        startBtn = (Button) findViewById(R.id.start);
-        messageType = (TextView) findViewById(R.id.messageType);
-        sender = (TextView) findViewById(R.id.sender);
-        lastMessage = (TextView) findViewById(R.id.lastMessage);
-        isServiceRun = (TextView) findViewById(R.id.isServiceRun);
+        startButton = (Button) findViewById(R.id.startButton);
+        messageTypeTextView = (TextView) findViewById(R.id.messageTypeTextView);
+        senderTextView = (TextView) findViewById(R.id.senderTextView);
+        receiveMessageTextView = (TextView) findViewById(R.id.receiveMessageTextView);
+        isServiceRunTextView = (TextView) findViewById(R.id.isServiceRunTextView);
+        sendMessageTextView = (TextView) findViewById(R.id.sendMessageTextView);
+        listenerKeywordButton = (Button) findViewById(R.id.listenerKeywordButton);
 
 
-        startBtn.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -68,6 +72,14 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        listenerKeywordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
 
     }
 
@@ -106,12 +118,13 @@ public class MainActivity extends Activity {
                 MessageBean messageBean = bundle.getParcelable(Constants.MSG);
 
                 if (messageBean.getMessageType() == MessageBean.MSG_QQ) {
-                    messageType.setText(getString(R.string.message_type_qq));
+                    messageTypeTextView.setText(getString(R.string.message_type_qq));
                 } else if (messageBean.getMessageType() == MessageBean.MSG_WECHAT) {
-                    messageType.setText(getString(R.string.message_type_wechat));
+                    messageTypeTextView.setText(getString(R.string.message_type_wechat));
                 }
-                sender.setText(messageBean.getFromName());
-                lastMessage.setText(messageBean.getReceiveContent());
+                senderTextView.setText(messageBean.getFromName());
+                receiveMessageTextView.setText(messageBean.getReceiveContent());
+                sendMessageTextView.setText(messageBean.getSendContent());
 
             } else if (action.equals(Constants.ACTION_MSG_SERVICE)) {
                 int serviceState = bundle.getInt(Constants.MSG_SERVICE);
@@ -119,9 +132,9 @@ public class MainActivity extends Activity {
                 MyLog.e(TAG, "receive serviceState:" + serviceState);
 
                 if (serviceState == Constants.MSG_SERVICE_ON) {
-                    isServiceRun.setText(getString(R.string.service_is_run));
+                    isServiceRunTextView.setText(getString(R.string.service_is_run));
                 } else {
-                    isServiceRun.setText(getString(R.string.service_not_run));
+                    isServiceRunTextView.setText(getString(R.string.service_not_run));
                 }
 
 

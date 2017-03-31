@@ -11,6 +11,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,6 +59,8 @@ public class MonitorService extends AccessibilityService {
     //收到的信息
     private String sendMessage = "";
 
+    private SharedPreferences spListenerKeyword = null;
+
 
     Handler handler = new Handler() {
 
@@ -82,6 +85,9 @@ public class MonitorService extends AccessibilityService {
                     AccessibilityNodeInfo nodeInfoInput = (AccessibilityNodeInfo) msg.obj;
                     MyLog.e(TAG, "receive edit node : " + nodeInfoInput.toString());
 
+                    if (sendMessage == null || sendMessage.isEmpty()) {
+                        break;
+                    }
                     performInput(nodeInfoInput, sendMessage);
 
                     try {
@@ -234,6 +240,7 @@ public class MonitorService extends AccessibilityService {
             Bundle arguments = new Bundle();
             arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text);
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+            sendMessage = null;
         }
         //Android 4.3 版本及以上
         else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -242,6 +249,7 @@ public class MonitorService extends AccessibilityService {
             clipboard.setPrimaryClip(clip);
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_FOCUS);
             nodeInfo.performAction(AccessibilityNodeInfo.ACTION_PASTE);
+            sendMessage = null;
         }
 
     }
@@ -256,61 +264,82 @@ public class MonitorService extends AccessibilityService {
         String packageName = event.getPackageName().toString();
         String className = event.getClassName().toString();
 
+        for (int i = 0; i < event.getRecordCount(); i++) {
+            MyLog.e(TAG, "event:" + "i->" + event.getRecord(i));
+
+        }
+
+
         switch (eventType) {
             //第一步：监听通知栏消息
             case AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED:
                 List<CharSequence> texts = event.getText();
 
                 MyLog.e(TAG, "收到的消息为:" + texts);
-
                 if (!texts.isEmpty()) {
                     for (CharSequence text : texts) {
                         String content = text.toString();
-                        MyLog.e(TAG, "text:" + content);
 
                         int index = content.indexOf(Constants.SEPARATED, 1);
-                        MyLog.e(TAG, "separated.index:" + index);
-
 
                         String receiveName = content.substring(0, index);
-                        final String receiveMessage = content.substring(index + 1, content.length());
+                        String receiveMessage = content.substring(index + 1, content.length()).trim();
+
+
+                        //创建message bean对象  为了显示提在判断外面
+                        final MessageBean messageBean = new MessageBean();
+                        if (packageName.equals(Constants.PKG_QQ)) {
+                            messageBean.setMessageType(MessageBean.MSG_QQ);
+
+                        } else if (packageName.equals(Constants.PKG_WECHAT)) {
+                            messageBean.setMessageType(MessageBean.MSG_WECHAT);
+                        }
+                        messageBean.setFromName(receiveName);
+                        messageBean.setReceiveContent(receiveMessage);
+                        messageBean.setReceiveTime(System.currentTimeMillis());
+
+
+                        String keyword = spListenerKeyword.getString(Constants.SP_LISTENER_KEYWORD, getString(R.string.listener_keyword_default));
+                        MyLog.e(TAG, "keyword:" + keyword);
 
                         //收到@提醒
-                        if (receiveName.equals("vergo")
-                                || receiveName.equals("Joker")
-                                || receiveName.equals("jack")) {
+                        if ( receiveMessage.startsWith(keyword) ) {
+
+                            MyLog.e(TAG, "收到@消息:" + receiveMessage);
 
 
-                            //创建message bean对象
-                            final MessageBean messageBean = new MessageBean();
-                            if (packageName.equals(Constants.PKG_QQ)) {
-                                messageBean.setMessageType(MessageBean.MSG_QQ);
+                            if (receiveMessage.trim().equals(keyword)
+                                    || receiveMessage.trim().equals(keyword + " ")) {  //后面的字符串不知道是啥
 
-                            } else if (packageName.equals(Constants.PKG_WECHAT)) {
-                                messageBean.setMessageType(MessageBean.MSG_WECHAT);
-                            }
-                            messageBean.setFromName(receiveName);
-                            messageBean.setReceiveContent(receiveMessage);
-                            messageBean.setReceiveTime(System.currentTimeMillis());
+                                MyLog.e(TAG, "发送欢迎消息");
+                                sendMessage = getString(R.string.welcome_msg);
+                                messageBean.setSendContent(sendMessage);
 
 
-                            new Thread(){
-                                @Override
-                                public void run() {
+                            } else {
 
-                                    //获取返回数据
-                                    sendMessage = RobotUtil.getChatMessage(receiveMessage);
-                                    messageBean.setSendContent(sendMessage);
-                                    MyLog.e(TAG, "run->result:" + sendMessage);
-
-                                    //发送广播
-                                    Intent intent = new Intent();
-                                    intent.putExtra(Constants.MSG, messageBean);
-                                    intent.setAction(Constants.ACTION_MSG);
-                                    sendBroadcast(intent);
-
+                                int msgIndex = receiveMessage.trim().indexOf(keyword);
+                                if (msgIndex < 0) {
+                                    break;
                                 }
-                            }.start();
+
+                                final String receiveMsg = receiveMessage.trim().substring(msgIndex + keyword.length());
+                                MyLog.e(TAG, "msgIndex:" + msgIndex + " , receiveMsg:" + receiveMsg);
+
+                                new Thread(){
+                                    @Override
+                                    public void run() {
+
+                                        //获取返回数据
+                                        sendMessage = RobotUtil.getChatMessage(receiveMsg);
+                                        messageBean.setSendContent(sendMessage);
+                                        MyLog.e(TAG, "run->result:" + sendMessage);
+
+                                    }
+                                }.start();
+
+                            }
+
 
 
                             //模拟打开通知栏消息
@@ -330,6 +359,14 @@ public class MonitorService extends AccessibilityService {
                             }
                             break;
                         }
+
+
+                        //发送广播
+                        Intent intent = new Intent();
+                        intent.putExtra(Constants.MSG, messageBean);
+                        intent.setAction(Constants.ACTION_MSG);
+                        sendBroadcast(intent);
+
 
                     }
                 }
@@ -538,6 +575,22 @@ public class MonitorService extends AccessibilityService {
 
         sendServiceStateBroadcast(Constants.MSG_SERVICE_ON);
 
+        initSystemConfig();
+
+        initAccessibilityServiceInfo();
+
+        initDB();
+
+        ToastUtil.showShortToast(R.string.envelope_service_start);
+    }
+
+    private void initDB() {
+        if (spListenerKeyword == null) {
+            spListenerKeyword = this.getSharedPreferences(Constants.SP_LISTENER_KEYWORD, MODE_PRIVATE);
+        }
+    }
+
+    private void initSystemConfig() {
         //获取电源管理器对象
         pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
         //得到键盘锁管理器对象
@@ -546,18 +599,18 @@ public class MonitorService extends AccessibilityService {
         kl = km.newKeyguardLock("unLock");
         //初始化音频
         player = MediaPlayer.create(this, R.raw.lowbattery);
+    }
 
+    private void initAccessibilityServiceInfo() {
         AccessibilityServiceInfo serviceInfo = new AccessibilityServiceInfo();
         serviceInfo.eventTypes = AccessibilityEvent.TYPE_NOTIFICATION_STATE_CHANGED
                 | AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
                 | AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
         serviceInfo.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC;
         serviceInfo.flags = AccessibilityServiceInfo.DEFAULT;
-	    serviceInfo.packageNames = new String[] {Constants.PKG_QQ, Constants.PKG_WECHAT};
+        serviceInfo.packageNames = new String[] {Constants.PKG_QQ, Constants.PKG_WECHAT};
         serviceInfo.notificationTimeout = 100;
         setServiceInfo(serviceInfo);
-
-        ToastUtil.showShortToast(R.string.envelope_service_start);
     }
 
     @Override
