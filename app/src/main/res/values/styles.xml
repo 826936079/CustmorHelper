@@ -28,7 +28,7 @@
     <style name="main_text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">@dimen/listener_text_margin_left</item>
+        <item name="android:layout_marginLeft">@dimen/monitor_text_margin_left</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">#ff393939</item>
         <item name="android:gravity">left</item>

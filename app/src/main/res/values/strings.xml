@@ -25,9 +25,13 @@
     <string name="welcome_msg">你可以跟我聊这些（请@我 + 笑话、新闻、图片、成语接龙、故事、天气、问答、百科、菜谱、计算、飞机、列车），例如：
 1 讲个笑话 2 看新闻  3 刘亦菲的照片 4 开始成语接龙 5 讲个故事   6 今天深圳的天气 7 感冒应该怎么办 8 周杰伦介绍 9 蛋炒饭怎么做 10 1+1 11 明天深圳到上海的飞机 12 明天深圳到上海火车</string>
     <string name="change">修改</string>
-    <string name="listener_username">监听用户名:</string>
-    <string name="listener_keyword">监听关键字:</string>
-    <string name="listenerser_name_default">Joker</string>
-    <string name="listener_keyword_default">\@SBJ</string>
+    <string name="monitor_username">监听用户名:</string>
+    <string name="monitor_keyword">监听关键字:</string>
+    <string name="monitor_username_default">Joker</string>
+    <string name="monitor_keyword_default">\@SBJ</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="dialog_ok">确定</string>
+    <string name="monitor_username_title">输入要监听的用户</string>
+    <string name="monitor_keyword_title">输入要监听的关键字</string>
 
 </resources>

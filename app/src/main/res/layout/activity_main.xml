@@ -40,18 +40,18 @@
 
         <TextView
             style="@style/main_text"
-            android:text="@string/listener_username"/>
+            android:text="@string/monitor_username"/>
 
         <TextView
-            android:id="@+id/listenerUserNameTextView"
-            android:text="@string/listenerser_name_default"
+            android:id="@+id/monitorUserNameTextView"
+            android:text="@string/monitor_username_default"
             style="@style/main_text"/>
 
         <Button
-            android:id="@+id/listenerUserNameButton"
+            android:id="@+id/monitorUserNameButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/listener_button_margin_left"
+            android:layout_marginLeft="@dimen/monitor_button_margin_left"
             android:text="@string/change"/>
 
     </LinearLayout>
@@ -61,18 +61,18 @@
 
         <TextView
             style="@style/main_text"
-            android:text="@string/listener_keyword"/>
+            android:text="@string/monitor_keyword"/>
 
         <TextView
-            android:id="@+id/listenerKeywordTextView"
-            android:text="@string/listener_keyword_default"
+            android:id="@+id/monitorKeywordTextView"
+            android:text="@string/monitor_keyword_default"
             style="@style/main_text"/>
 
         <Button
-            android:id="@+id/listenerKeywordButton"
+            android:id="@+id/monitorKeywordButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/listener_button_margin_left"
+            android:layout_marginLeft="@dimen/monitor_button_margin_left"
             android:text="@string/change"/>
 
     </LinearLayout>

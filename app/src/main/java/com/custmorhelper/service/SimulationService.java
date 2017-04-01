@@ -11,7 +11,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.custmorhelper.R;
 import com.custmorhelper.bean.MessageBean;
+import com.custmorhelper.manager.GlobleManager;
 import com.custmorhelper.model.RobotUtil;
 import com.custmorhelper.util.Constants;
 import com.custmorhelper.util.MyLog;
@@ -35,8 +35,8 @@ import java.util.List;
  * http://blog.csdn.net/shineflowers/article/details/47109349
  *
  */
-public class MonitorService extends AccessibilityService {
-    private static final String TAG = MonitorService.class.getSimpleName();
+public class SimulationService extends AccessibilityService {
+    private static final String TAG = SimulationService.class.getSimpleName();
 
     private boolean enableKeyguard = true;//默认有屏幕锁
 
@@ -58,9 +58,6 @@ public class MonitorService extends AccessibilityService {
 
     //收到的信息
     private String sendMessage = "";
-
-    private SharedPreferences spListenerKeyword = null;
-
 
     Handler handler = new Handler() {
 
@@ -95,8 +92,7 @@ public class MonitorService extends AccessibilityService {
                     } catch (Exception e) {
 
                     }
-//                    monitorSendEvent();
-                    monitorSendEventByTextName();
+                    simulationSendEventByTextName();
                     break;
 
                 case Constants.HANDLE_AUTO_SEND:
@@ -109,7 +105,7 @@ public class MonitorService extends AccessibilityService {
                     } catch (Exception e) {
 
                     }
-                    performHome(MonitorService.this);
+                    performHome(SimulationService.this);
                     break;
                 default:
 
@@ -283,7 +279,7 @@ public class MonitorService extends AccessibilityService {
                         int index = content.indexOf(Constants.SEPARATED, 1);
 
                         String receiveName = content.substring(0, index);
-                        String receiveMessage = content.substring(index + 1, content.length()).trim();
+                        final String receiveMessage = content.substring(index + 1, content.length()).trim();
 
 
                         //创建message bean对象  为了显示提在判断外面
@@ -299,47 +295,75 @@ public class MonitorService extends AccessibilityService {
                         messageBean.setReceiveTime(System.currentTimeMillis());
 
 
-                        String keyword = spListenerKeyword.getString(Constants.SP_LISTENER_KEYWORD, getString(R.string.listener_keyword_default));
-                        MyLog.e(TAG, "keyword:" + keyword);
+                        String monitorUsername = GlobleManager.getSharePreferenceMonitor().getString(Constants.SP_MONITOR_USERNAME,
+                                getString(R.string.monitor_username_default));
+                        String monitorKeyword = GlobleManager.getSharePreferenceMonitor().getString(Constants.SP_MONITOR_KEYWORD,
+                                getString(R.string.monitor_keyword_default));
+                        MyLog.e(TAG, "monitorUsername:" + monitorUsername + " ,monitorKeyword:" + monitorKeyword);
 
-                        //收到@提醒
-                        if ( receiveMessage.startsWith(keyword) ) {
+                        //发送广播
+                        Intent intent = new Intent();
+                        intent.putExtra(Constants.MSG, messageBean);
+                        intent.setAction(Constants.ACTION_MSG);
+                        sendBroadcast(intent);
+
+
+                        if (monitorUsername.trim().isEmpty() || monitorKeyword.trim().isEmpty()) {
+                            return;
+                        }
+
+                        //收到@提醒或者收到指定用户信息
+                        if (receiveMessage.startsWith(monitorKeyword) || receiveName.equals(monitorUsername)) {
 
                             MyLog.e(TAG, "收到@消息:" + receiveMessage);
 
 
-                            if (receiveMessage.trim().equals(keyword)
-                                    || receiveMessage.trim().equals(keyword + " ")) {  //后面的字符串不知道是啥
+                            if (receiveMessage.startsWith(monitorKeyword)) {
+                                if (receiveMessage.trim().equals(monitorKeyword)
+                                        || receiveMessage.trim().equals(monitorKeyword + " ")) {  //手机@时返回有后面的字符串
 
-                                MyLog.e(TAG, "发送欢迎消息");
-                                sendMessage = getString(R.string.welcome_msg);
-                                messageBean.setSendContent(sendMessage);
+                                    MyLog.e(TAG, "发送欢迎消息");
+                                    sendMessage = getString(R.string.welcome_msg);
+                                    messageBean.setSendContent(sendMessage);
 
 
-                            } else {
+                                } else {
 
-                                int msgIndex = receiveMessage.trim().indexOf(keyword);
-                                if (msgIndex < 0) {
-                                    break;
+                                    int msgIndex = receiveMessage.trim().indexOf(monitorKeyword);
+                                    if (msgIndex < 0) {
+                                        break;
+                                    }
+
+                                    final String receiveMsg = receiveMessage.trim().substring(msgIndex + monitorKeyword.length());
+                                    MyLog.e(TAG, "msgIndex:" + msgIndex + " , receiveMsg:" + receiveMsg);
+
+                                    new Thread(){
+                                        @Override
+                                        public void run() {
+
+                                            //获取返回数据
+                                            sendMessage = RobotUtil.getChatMessage(receiveMsg);
+                                            messageBean.setSendContent(sendMessage);
+                                            MyLog.e(TAG, "run->result:" + sendMessage);
+
+                                        }
+                                    }.start();
+
                                 }
-
-                                final String receiveMsg = receiveMessage.trim().substring(msgIndex + keyword.length());
-                                MyLog.e(TAG, "msgIndex:" + msgIndex + " , receiveMsg:" + receiveMsg);
+                            } else if (receiveName.equals(monitorUsername)) {
 
                                 new Thread(){
                                     @Override
                                     public void run() {
 
                                         //获取返回数据
-                                        sendMessage = RobotUtil.getChatMessage(receiveMsg);
+                                        sendMessage = RobotUtil.getChatMessage(receiveMessage);
                                         messageBean.setSendContent(sendMessage);
                                         MyLog.e(TAG, "run->result:" + sendMessage);
 
                                     }
                                 }.start();
-
                             }
-
 
 
                             //模拟打开通知栏消息
@@ -361,13 +385,6 @@ public class MonitorService extends AccessibilityService {
                         }
 
 
-                        //发送广播
-                        Intent intent = new Intent();
-                        intent.putExtra(Constants.MSG, messageBean);
-                        intent.setAction(Constants.ACTION_MSG);
-                        sendBroadcast(intent);
-
-
                     }
                 }
                 break;
@@ -380,7 +397,7 @@ public class MonitorService extends AccessibilityService {
                     //进入聊天界面
                     MyLog.e(TAG, "进入聊天界面...");
 
-                    monitorInputEvent();
+                    simulationInputEvent();
 
                 } else {
                     MyLog.e(TAG, "other window");
@@ -397,7 +414,7 @@ public class MonitorService extends AccessibilityService {
 
 
     //模拟输入事件
-    private void monitorInputEvent() {
+    private void simulationInputEvent() {
 
 
         AccessibilityNodeInfo rootNodeInfo = getRootInActiveWindow();
@@ -418,7 +435,7 @@ public class MonitorService extends AccessibilityService {
     }
 
     //模拟发送事件
-    private void monitorSendEvent() {
+    private void simulationSendEvent() {
 
 
         AccessibilityNodeInfo rootNodeInfo = getRootInActiveWindow();
@@ -439,7 +456,7 @@ public class MonitorService extends AccessibilityService {
     }
 
 
-    private void monitorSendEventByTextName() {
+    private void simulationSendEventByTextName() {
 
 
         AccessibilityNodeInfo rootNodeInfo = getRootInActiveWindow();
@@ -448,13 +465,13 @@ public class MonitorService extends AccessibilityService {
         MyLog.e(TAG, "sendNodeInfos:" + sendNodeInfos);
         nextClick(sendNodeInfos);
 
-        performHome(MonitorService.this);
+        performHome(SimulationService.this);
 
     }
 
 
     //模拟事件
-    private void monitorEventByType(int type) {
+    private void simulationEventByType(int type) {
 
 
         AccessibilityNodeInfo rootNodeInfo = getRootInActiveWindow();
@@ -579,15 +596,7 @@ public class MonitorService extends AccessibilityService {
 
         initAccessibilityServiceInfo();
 
-        initDB();
-
         ToastUtil.showShortToast(R.string.envelope_service_start);
-    }
-
-    private void initDB() {
-        if (spListenerKeyword == null) {
-            spListenerKeyword = this.getSharedPreferences(Constants.SP_LISTENER_KEYWORD, MODE_PRIVATE);
-        }
     }
 
     private void initSystemConfig() {

@@ -1,6 +1,9 @@
 package com.custmorhelper.manager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.custmorhelper.util.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,9 +26,11 @@ public class GlobleManager {
     private static GlobleManager globleManager;
     private static OkHttpClient okHttpClient;
     private static Map<String, List<Cookie>> listMap;
+    private static SharedPreferences sharePreferenceMonitor;
 
-    private GlobleManager() {
+    private GlobleManager(Context context) {
         initOkHttpClient();
+        initDB(context);
     }
 
     private static void initOkHttpClient() {
@@ -49,10 +54,16 @@ public class GlobleManager {
                 .build();
     }
 
+    public static void initDB(Context context) {
+        if (sharePreferenceMonitor == null) {
+            sharePreferenceMonitor = context.getSharedPreferences(Constants.SP_MONITOR, context.MODE_PRIVATE);
+        }
+    }
+
     public static GlobleManager getInstance(Context context) {
         if (globleManager == null) {
             mContext = context.getApplicationContext();
-            globleManager = new GlobleManager();
+            globleManager = new GlobleManager(context);
         }
         return globleManager;
     }
@@ -67,5 +78,12 @@ public class GlobleManager {
             initOkHttpClient();
         }
         return okHttpClient;
+    }
+
+    public static SharedPreferences getSharePreferenceMonitor() {
+        if (sharePreferenceMonitor == null) {
+            initDB(mContext);
+        }
+        return sharePreferenceMonitor;
     }
 }

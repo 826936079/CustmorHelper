@@ -15,12 +15,15 @@ import android.widget.Toast;
 
 import com.custmorhelper.R;
 import com.custmorhelper.bean.MessageBean;
+import com.custmorhelper.fragment.ChangeKeywordDialog;
+import com.custmorhelper.fragment.ChangeUserNameDialog;
+import com.custmorhelper.manager.GlobleManager;
 import com.custmorhelper.service.MainService;
-import com.custmorhelper.service.MonitorService;
+import com.custmorhelper.service.SimulationService;
 import com.custmorhelper.util.Constants;
 import com.custmorhelper.util.MyLog;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeywordChangeListener, ChangeUserNameDialog.OnUserNameChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private Button startButton;
@@ -29,10 +32,13 @@ public class MainActivity extends Activity {
     private TextView senderTextView;
     private TextView receiveMessageTextView;
     private TextView sendMessageTextView;
-    private Button listenerKeywordButton;
+
+    private TextView monitorUserNameTextView;
+    private Button monitorUserNameButton;
+    private TextView monitorKeywordTextView;
+    private Button monitorKeywordButton;
 
     private MainReceiver mainReceiver;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +62,10 @@ public class MainActivity extends Activity {
         receiveMessageTextView = (TextView) findViewById(R.id.receiveMessageTextView);
         isServiceRunTextView = (TextView) findViewById(R.id.isServiceRunTextView);
         sendMessageTextView = (TextView) findViewById(R.id.sendMessageTextView);
-        listenerKeywordButton = (Button) findViewById(R.id.listenerKeywordButton);
+        monitorUserNameTextView = (TextView) findViewById(R.id.monitorUserNameTextView);
+        monitorKeywordTextView = (TextView) findViewById(R.id.monitorKeywordTextView);
+        monitorUserNameButton = (Button) findViewById(R.id.monitorUserNameButton);
+        monitorKeywordButton = (Button) findViewById(R.id.monitorKeywordButton);
 
 
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -73,14 +82,31 @@ public class MainActivity extends Activity {
             }
         });
 
-        listenerKeywordButton.setOnClickListener(new View.OnClickListener() {
+        monitorUserNameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showChangeUserNameDialog();
+            }
+        });
+
+        monitorKeywordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                showChangeKeywordDialog();
             }
         });
 
 
+    }
+
+    private void showChangeUserNameDialog() {
+        ChangeUserNameDialog changeUserNameDialog = new ChangeUserNameDialog();
+        changeUserNameDialog.show(getFragmentManager(), ChangeUserNameDialog.class.getSimpleName());
+    }
+
+    private void showChangeKeywordDialog() {
+        ChangeKeywordDialog changeKeywordDialog = new ChangeKeywordDialog();
+        changeKeywordDialog.show(getFragmentManager(), ChangeKeywordDialog.class.getSimpleName());
     }
 
     private void initDate() {
@@ -88,6 +114,15 @@ public class MainActivity extends Activity {
 //        if (!isAccessibilitySettingsOn(this)) {
 //            MyLog.e(TAG, "Accessibility settings is not open");
 //        }
+
+        String monitorUsername = GlobleManager.getSharePreferenceMonitor().getString(Constants.SP_MONITOR_USERNAME,
+                getString(R.string.monitor_username_default));
+        String monitorKeyword = GlobleManager.getSharePreferenceMonitor().getString(Constants.SP_MONITOR_KEYWORD,
+                getString(R.string.monitor_keyword_default));
+        monitorKeywordTextView.setText(monitorKeyword);
+        monitorUserNameTextView.setText(monitorUsername);
+
+
 
         Intent intent = new Intent(this, MainService.class);
         startService(intent);
@@ -104,6 +139,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onKeywordChange(String keyword) {
+        monitorKeywordTextView.setText(keyword);
+    }
+
+    @Override
+    public void onUserNameChange(String username) {
+        monitorUserNameTextView.setText(username);
     }
 
 
@@ -152,7 +197,7 @@ public class MainActivity extends Activity {
 
     private boolean isAccessibilitySettingsOn(Context mContext) {
         int accessibilityEnabled = 0;
-        final String service = getPackageName() + "/" + MonitorService.class.getCanonicalName();
+        final String service = getPackageName() + "/" + SimulationService.class.getCanonicalName();
         MyLog.e(TAG, "-------------- > service :: " + service);
         try {
             accessibilityEnabled = Settings.Secure.getInt(
