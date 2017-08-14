@@ -1,142 +1,252 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context=".activity.MainActivity">
+    android:background="@color/gray"
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/ctl_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView
+                android:id="@+id/ctl_iv_top"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"/>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar_main"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.ToolBar"/>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/isServiceRunTitle"
+                        style="@style/main_text"
+                        android:text="@string/is_service_run"/>
+
+                    <TextView
+                        android:id="@+id/isServiceRunTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"
+                        android:text="@string/service_not_run"/>
+
+                    <Button
+                        android:id="@+id/startButton"
+                        style="@style/main_button"
+                        android:text="@string/open_accessibility"/>
+
+                </LinearLayout>
 
 
-    <LinearLayout
-        style="@style/main_layout">
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        style="@style/main_text"
+                        android:text="@string/monitor_username"/>
+
+                    <TextView
+                        android:id="@+id/monitorUserNameTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"
+                        android:text="@string/monitor_username_default"/>
+
+                    <Button
+                        android:id="@+id/monitorUserNameButton"
+                        style="@style/main_button"
+                        android:text="@string/change"/>
+
+                </LinearLayout>
 
 
-        <TextView
-            style="@style/main_text"
-            android:text="@string/is_service_run"/>
+            </android.support.v7.widget.CardView>
 
-        <TextView
-            android:id="@+id/isServiceRunTextView"
-            style="@style/main_text"
-            android:text="@string/service_not_run"/>
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
 
-        <Button
-            android:id="@+id/startButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/button_padding"
-            android:layout_marginLeft="@dimen/main_layout_margin"
-            android:layout_centerInParent="true"
-            android:textSize="@dimen/button_small_size"
-            android:text="@string/open_accessibility"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
 
-    </LinearLayout>
+                    <TextView
+                        style="@style/main_text"
+                        android:text="@string/monitor_keyword"/>
 
-    <LinearLayout
-        style="@style/main_layout">
+                    <TextView
+                        android:id="@+id/monitorKeywordTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"
+                        android:text="@string/monitor_keyword_default"/>
 
-        <TextView
-            style="@style/main_text"
-            android:text="@string/monitor_username"/>
+                    <Button
+                        android:id="@+id/monitorKeywordButton"
+                        style="@style/main_button"
+                        android:text="@string/change"/>
 
-        <TextView
-            android:id="@+id/monitorUserNameTextView"
-            android:text="@string/monitor_username_default"
-            style="@style/main_text"/>
+                </LinearLayout>
 
-        <Button
-            android:id="@+id/monitorUserNameButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/monitor_button_margin_left"
-            android:text="@string/change"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        style="@style/main_layout">
-
-        <TextView
-            style="@style/main_text"
-            android:text="@string/monitor_keyword"/>
-
-        <TextView
-            android:id="@+id/monitorKeywordTextView"
-            android:text="@string/monitor_keyword_default"
-            style="@style/main_text"/>
-
-        <Button
-            android:id="@+id/monitorKeywordButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/monitor_button_margin_left"
-            android:text="@string/change"/>
-
-    </LinearLayout>
+            </android.support.v7.widget.CardView>
 
 
-    <LinearLayout
-        style="@style/main_layout">
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
 
-        <TextView
-            style="@style/main_text"
-            android:text="@string/message_type"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/messageTypeTextView"
-            style="@style/main_text"/>
+                    <TextView
+                        style="@style/main_text"
+                        android:text="@string/message_type"/>
 
+                    <TextView
+                        android:id="@+id/messageTypeTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"/>
 
-    </LinearLayout>
-
-    <LinearLayout
-        style="@style/main_layout">
-
-        <TextView
-            style="@style/main_text"
-            android:text="@string/sender"/>
-
-        <TextView
-            android:id="@+id/senderTextView"
-            style="@style/main_text"/>
+                </LinearLayout>
 
 
-    </LinearLayout>
+            </android.support.v7.widget.CardView>
 
-    <LinearLayout
-        style="@style/main_layout"
-        android:orientation="vertical">
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
 
-        <TextView
-            style="@style/main_text"
-            android:text="@string/receive_message"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/receiveMessageTextView"
-            android:autoLink="all"
-            style="@style/main_text"/>
+                    <TextView
+                        style="@style/main_text"
+                        android:text="@string/sender"/>
 
-
-    </LinearLayout>
-
-    <LinearLayout
-        style="@style/main_layout"
-        android:orientation="vertical">
-
-        <TextView
-            style="@style/main_text"
-            android:text="@string/send_message"/>
-
-        <TextView
-            android:id="@+id/sendMessageTextView"
-            android:autoLink="all"
-            style="@style/main_text"/>
+                    <TextView
+                        android:id="@+id/senderTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"/>
 
 
-    </LinearLayout>
+                </LinearLayout>
 
 
-</LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="50dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        style="@style/main_text"
+                        android:text="@string/receive_message"/>
+
+                    <TextView
+                        android:id="@+id/receiveMessageTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"
+                        android:autoLink="all"/>
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                style="@style/card_view_layout"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="8dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:minHeight="50dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        style="@style/main_text"
+                        android:text="@string/send_message"/>
+
+                    <TextView
+                        android:id="@+id/sendMessageTextView"
+                        style="@style/main_text"
+                        android:layout_weight="1"
+                        android:autoLink="all"/>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>

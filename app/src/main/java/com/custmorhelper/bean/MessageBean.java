@@ -127,4 +127,17 @@ public class MessageBean implements Parcelable {
     public void setMessageType(int messageType) {
         this.messageType = messageType;
     }
+
+    @Override
+    public String toString() {
+        return "MessageBean{" +
+                "id=" + id +
+                ", fromName='" + fromName + '\'' +
+                ", receiveContent='" + receiveContent + '\'' +
+                ", receiveTime=" + receiveTime +
+                ", sendContent='" + sendContent + '\'' +
+                ", sendTime=" + sendTime +
+                ", messageType=" + messageType +
+                '}';
+    }
 }

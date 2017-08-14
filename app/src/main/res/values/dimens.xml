@@ -10,7 +10,8 @@
 
     <dimen name="button_small_size">14sp</dimen>
 
-    <dimen name="main_layout_margin">15dp</dimen>
+    <dimen name="main_layout_margin_horizontal">15dp</dimen>
+    <dimen name="main_layout_margin_vertical">10dp</dimen>
 
     <dimen name="main_button_padding_left">5dp</dimen>
     <dimen name="monitor_button_margin_left">5dp</dimen>

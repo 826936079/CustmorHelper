@@ -28,7 +28,7 @@
     <string name="monitor_username">监听用户名:</string>
     <string name="monitor_keyword">监听关键字:</string>
     <string name="monitor_username_default">Joker</string>
-    <string name="monitor_keyword_default">\@SBJ</string>
+    <string name="monitor_keyword_default">\@holy-jack</string>
     <string name="dialog_cancel">取消</string>
     <string name="dialog_ok">确定</string>
     <string name="monitor_username_title">输入要监听的用户</string>

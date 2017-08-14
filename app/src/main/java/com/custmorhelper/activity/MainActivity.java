@@ -1,18 +1,22 @@
 package com.custmorhelper.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.custmorhelper.R;
 import com.custmorhelper.bean.MessageBean;
 import com.custmorhelper.fragment.ChangeKeywordDialog;
@@ -23,7 +27,9 @@ import com.custmorhelper.service.SimulationService;
 import com.custmorhelper.util.Constants;
 import com.custmorhelper.util.MyLog;
 
-public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeywordChangeListener, ChangeUserNameDialog.OnUserNameChangeListener {
+import jp.wasabeef.glide.transformations.BlurTransformation;
+
+public class MainActivity extends AppCompatActivity implements ChangeKeywordDialog.OnKeywordChangeListener, ChangeUserNameDialog.OnUserNameChangeListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private Button startButton;
@@ -37,6 +43,10 @@ public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeyw
     private Button monitorUserNameButton;
     private TextView monitorKeywordTextView;
     private Button monitorKeywordButton;
+
+    private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private ImageView mToolBarImageView;
+    private Toolbar mToolBar;
 
     private MainReceiver mainReceiver;
 
@@ -66,7 +76,22 @@ public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeyw
         monitorKeywordTextView = (TextView) findViewById(R.id.monitorKeywordTextView);
         monitorUserNameButton = (Button) findViewById(R.id.monitorUserNameButton);
         monitorKeywordButton = (Button) findViewById(R.id.monitorKeywordButton);
+        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.ctl_main);
+        mToolBarImageView = (ImageView) findViewById(R.id.ctl_iv_top);
+        mToolBar = (Toolbar) findViewById(R.id.toolbar_main);
 
+        setSupportActionBar(mToolBar);
+        mToolBar.setNavigationIcon(R.drawable.ic_back);
+        mToolBar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        Glide.with(this).load(R.drawable.bg)
+                .bitmapTransform(new BlurTransformation(this, 10))
+                .into(mToolBarImageView);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,7 +148,6 @@ public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeyw
         monitorUserNameTextView.setText(monitorUsername);
 
 
-
         Intent intent = new Intent(this, MainService.class);
         startService(intent);
 
@@ -139,6 +163,15 @@ public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeyw
     @Override
     protected void onResume() {
         super.onResume();
+        changeStatus();
+    }
+
+    private void changeStatus() {
+        if (isAccessibilitySettingsOn(this)) {
+            isServiceRunTextView.setText(getString(R.string.service_is_run));
+        } else {
+            isServiceRunTextView.setText(getString(R.string.service_not_run));
+        }
     }
 
     @Override
@@ -182,9 +215,7 @@ public class MainActivity extends Activity implements ChangeKeywordDialog.OnKeyw
                     isServiceRunTextView.setText(getString(R.string.service_not_run));
                 }
 
-
             }
-
 
         }
     }
